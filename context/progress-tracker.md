@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Design system and UI primitives (feature spec `01-design-system.md`)
+- Editor chrome — navbar + sidebar shell (feature spec `02-editor.md`)
 
 ## Current Goal
 
-- Install and configure shadcn/ui, add core UI primitive components, add `lucide-react`, and provide a `cn()` helper, all matching the dark-only theme.
+- Build the reusable base chrome that frames every editor screen: top navbar, left project sidebar shell, and a reusable dialog pattern (no concrete dialogs yet).
 
 ## Completed
 
@@ -20,6 +20,11 @@ Update this file whenever the current phase, active feature, or implementation s
   - Added `lib/utils.ts` with `cn()` (clsx + tailwind-merge).
   - Established the dark-only theme in `app/globals.css`: project palette tokens from `ui-context.md`, mapped to both shadcn semantic tokens and project Tailwind utility names via `@theme inline`. Dark is the default (`:root, .dark`) with `class="dark"` on `<html>`; fixed the font tokens to the loaded Geist variables.
   - Verified: `tsc --noEmit` clean and `next build` succeeds.
+- Feature `02-editor` (base editor chrome):
+  - `components/editor/editor-navbar.tsx` — fixed-height navbar; left/center/right; sidebar toggle (`PanelLeftOpen`/`PanelLeftClose`); right empty; `bg-surface` + bottom border.
+  - `components/editor/project-sidebar.tsx` — floating overlay (does not push content), slides in from left; `isOpen`/`onClose`; `Projects` header + close; `Tabs` (My Projects / Shared) with empty placeholders; full-width `New Project` button with `Plus`.
+  - `components/editor/editor-dialog.tsx` — reusable dialog pattern (title/description/footer) using theme tokens; no concrete dialogs built.
+  - Verified: `tsc --noEmit` and `eslint components/editor` both clean. (`next lint` is removed in Next 16; the project lints via the `eslint` CLI.)
 
 ## In Progress
 
