@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local tooling & personal notes (kept out of the repo)
+.claude/
+.playwright-mcp/
+link.txt
+prompts.txt
