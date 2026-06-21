@@ -4,11 +4,11 @@ Update this file whenever the current phase, active feature, or implementation s
 
 ## Current Phase
 
-- Authentication — Clerk integration (feature spec `03-auth.md`)
+- Project Dialogs — editor home screen + project create/rename/delete dialogs (feature spec `04-project-dialogs.md`)
 
 ## Current Goal
 
-- Wire Clerk into the app: `ClerkProvider` (dark theme + CSS-variable appearance), sign-in/sign-up pages, root redirects, route protection via `proxy.ts`, and the `UserButton` in the editor navbar.
+- Build the `/editor` home screen (heading, description, `New Project` action) and the project create/rename/delete dialogs, with sidebar item actions and a mobile backdrop scrim. Mock project data only — no API calls or persistence.
 
 ## Completed
 
@@ -40,6 +40,19 @@ Update this file whenever the current phase, active feature, or implementation s
   - `auth-shell.tsx` redesigned to match the target screenshot: 50/50 split, neutral lighter-surface left panel (`bg-surface`, differentiated from the near-black right), brand logo mark, `text-3xl` headline + subtitle, three icon+title+description feature items, and a copyright footer. Small screens remain form-only. Heading/subtitle widths tuned so line wraps match the screenshot.
   - Clerk form scaled up via appearance variables (`fontSize: 1rem`, `spacing: 1.1rem`) — the defaults (13px / 1rem) read too small in the half-width auth panel on large screens.
   - Left-panel paragraph text (subtitle + feature titles/descriptions) bumped from `text-sm` to 16px for readability against the enlarged form.
+- Spec-compliance pass against `03-auth.md` (2026-06-20):
+  - Re-audited the implementation against the spec; all items already matched except the left-panel feature list.
+  - Per the spec's "short text-only feature list" / "no feature cards", converted the `auth-shell.tsx` feature list to **text-only** — removed the lucide icons and the `bg-accent-dim` icon chips, keeping title + description as plain text. This intentionally reverts the earlier screenshot-driven icon design in favour of literal spec compliance.
+  - Re-verified the spec's "Check When Done" gate: `proxy.ts` at root; all routes protected except the env-derived public auth paths; auth pages use CSS-variable tokens only (no hardcoded colors); `ClerkProvider` wraps the root layout; `npm run build` passes.
+- Feature `04-project-dialogs` (editor home + project dialogs):
+  - `lib/slug.ts` — pure `slugify()` powering the live Create-dialog slug preview (lowercases, strips diacritics, collapses non-alphanumerics to single hyphens).
+  - `lib/projects.ts` — `Project` type + in-memory mock list with `ownership` (`owned` / `shared`). No API or persistence.
+  - `hooks/use-project-dialogs.tsx` — `ProjectDialogsProvider` + `useProjectDialogs()` managing dialog state, the shared name form field, loading state, and the mock project list (in-memory create/rename/delete). Shared so the editor home button and sidebar drive the same dialogs.
+  - `components/editor/project-dialogs.tsx` — Create (name input + live slug preview), Rename (prefilled input, current name in the description, autofocus, Enter submits), Delete (destructive confirmation, no input, destructive confirm button). Built on the existing `EditorDialog` shell.
+  - `components/editor/editor-home.tsx` + `app/editor/page.tsx` — editor home (heading `Create a project or open an existing one`, description, `New Project` + `Plus` → Create dialog); replaced the `Canvas coming soon` placeholder; not wrapped in cards.
+  - `components/editor/editor-shell.tsx` — wraps the shell in `ProjectDialogsProvider` and mounts `<ProjectDialogs />` once.
+  - `components/editor/project-sidebar.tsx` — renders the mock project lists per tab; rename/delete actions on owned items only (hidden for shared/collaborator); footer `New Project` → Create; mobile-only backdrop scrim that closes the sidebar on outside tap. Existing open/close behaviour unchanged.
+  - Verified: `tsc --noEmit` clean and `eslint` clean (the spec's "Check When Done"). In-browser: editor home renders, sidebar lists the 3 owned mock projects with wired Rename/Delete actions (and two `New Project` triggers); `slugify` confirmed via unit-style checks. Dialog open/close exercised; deeper in-browser dialog screenshots were blocked by an unrelated dev-page idle/freeze in the automation tool.
 
 ## In Progress
 

@@ -2,7 +2,9 @@
 
 import { useState, type ReactNode } from "react";
 
+import { ProjectDialogsProvider } from "@/hooks/use-project-dialogs";
 import { EditorNavbar } from "./editor-navbar";
+import { ProjectDialogs } from "./project-dialogs";
 import { ProjectSidebar } from "./project-sidebar";
 
 interface EditorShellProps {
@@ -12,25 +14,31 @@ interface EditorShellProps {
 /**
  * Client composition that frames every editor screen: the top navbar and the
  * floating project sidebar share a single open/closed state here, while the
- * canvas (route content) renders underneath as `children`.
+ * canvas (route content) renders underneath as `children`. The whole shell is
+ * wrapped in `ProjectDialogsProvider` so the home screen and the sidebar drive
+ * the same Create / Rename / Delete dialogs (mounted once via `ProjectDialogs`).
  */
 export function EditorShell({ children }: EditorShellProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
-    <div className="flex h-screen flex-col bg-base text-copy-primary">
-      <EditorNavbar
-        isSidebarOpen={isSidebarOpen}
-        onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
-      />
-
-      <div className="relative flex-1 overflow-hidden">
-        <ProjectSidebar
-          isOpen={isSidebarOpen}
-          onClose={() => setIsSidebarOpen(false)}
+    <ProjectDialogsProvider>
+      <div className="flex h-screen flex-col bg-base text-copy-primary">
+        <EditorNavbar
+          isSidebarOpen={isSidebarOpen}
+          onToggleSidebar={() => setIsSidebarOpen((open) => !open)}
         />
-        <main className="h-full">{children}</main>
+
+        <div className="relative flex-1 overflow-hidden">
+          <ProjectSidebar
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+          />
+          <main className="h-full">{children}</main>
+        </div>
       </div>
-    </div>
+
+      <ProjectDialogs />
+    </ProjectDialogsProvider>
   );
 }
