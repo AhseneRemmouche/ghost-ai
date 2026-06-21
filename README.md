@@ -20,6 +20,39 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Troubleshooting
+
+### Auth (Clerk) never loads / sign-in form is blank
+
+**Symptom:** The sign-in form and `<UserButton />` render nothing (Clerk stays stuck on
+`clerkStatus="loading"`), and requests through the Clerk middleware (`proxy.ts`) take several
+seconds each. The browser loads Clerk's assets fine, but server-side calls hang.
+
+**Cause:** A TLS-inspecting security product (corporate firewall or antivirus) re-signs HTTPS
+traffic with its own root CA. Your browser trusts that CA (it's in the OS trust store), but
+Node.js ships its own bundled CA list and ignores the OS store by default, so every server-side
+HTTPS call from the dev server fails certificate verification (`UNABLE_TO_VERIFY_LEAF_SIGNATURE`).
+This breaks any Node HTTPS — Clerk's API, the npm registry, `fetch` in route handlers, etc.
+
+**Fix:** Tell Node to trust the OS trust store (Node 22+):
+
+```bash
+# Persist for all Node processes (recommended)
+# macOS/Linux: add to your shell profile
+export NODE_OPTIONS=--use-system-ca
+# Windows (user-level, applies to new terminals):
+setx NODE_OPTIONS --use-system-ca
+```
+
+Quick check that egress works after setting it:
+
+```bash
+node --use-system-ca -e "fetch('https://example.com').then(r => console.log(r.status))"
+```
+
+This is a per-machine environment quirk, so the flag is intentionally **not** baked into
+`package.json` — set it in your environment, not the project config.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
