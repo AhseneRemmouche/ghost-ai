@@ -1,21 +1,17 @@
 import type { ReactNode } from "react";
-import { FileText, Sparkles, Users } from "lucide-react";
 
 const features = [
   {
-    icon: Sparkles,
     title: "AI Architecture Generation",
     description:
       "Describe your system, AI maps it to nodes and edges on a live canvas.",
   },
   {
-    icon: Users,
     title: "Real-time Collaboration",
     description:
       "Live cursors, presence indicators, and shared node editing across your team.",
   },
   {
-    icon: FileText,
     title: "Instant Spec Generation",
     description:
       "Export a complete Markdown technical spec directly from the canvas graph.",
@@ -55,19 +51,14 @@ export function AuthShell({ children }: { children: ReactNode }) {
           </div>
 
           <ul className="space-y-5">
-            {features.map(({ icon: Icon, title, description }) => (
-              <li key={title} className="flex gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-accent-dim text-brand">
-                  <Icon className="h-5 w-5" />
-                </span>
-                <div className="space-y-0.5">
-                  <p className="text-[1rem] font-medium text-copy-primary">
-                    {title}
-                  </p>
-                  <p className="text-[1rem] leading-relaxed text-copy-muted">
-                    {description}
-                  </p>
-                </div>
+            {features.map(({ title, description }) => (
+              <li key={title} className="space-y-0.5">
+                <p className="text-[1rem] font-medium text-copy-primary">
+                  {title}
+                </p>
+                <p className="text-[1rem] leading-relaxed text-copy-muted">
+                  {description}
+                </p>
               </li>
             ))}
           </ul>
